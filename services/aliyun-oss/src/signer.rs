@@ -188,6 +188,17 @@ fn canonicalize_resource(
     method: SigningMethod,
     cred: &Credential,
 ) -> String {
+    ctx.query = ctx
+        .query
+        .iter()
+        .map(|(k, v)| {
+            (
+                utf8_percent_encode(k, percent_encoding::NON_ALPHANUMERIC).to_string(),
+                utf8_percent_encode(v, percent_encoding::NON_ALPHANUMERIC).to_string(),
+            )
+        })
+        .collect();
+
     if let SigningMethod::Query(_) = method {
         // Insert security token
         if let Some(token) = &cred.security_token {
